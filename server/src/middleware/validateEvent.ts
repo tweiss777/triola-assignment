@@ -1,25 +1,16 @@
-import { JSONSchemaType } from "ajv";
-import IEvent from "../types/IEvent";
+import { Request, Response, NextFunction } from "express";
+import Ajv from "ajv";
+import eventSchema from "../schemas/eventSchema";
+const ajv = new Ajv();
 
-const eventSchema: JSONSchemaType<IEvent> = {
-    type: "object",
-    properties: {
-      id: {
-        type: "string",
-      },
-      title: {
-        type: "string",
-      },
-      description: {
-        type: "string",
-      },
-      date: {
-        type: "string",
-      },
-      location: {
-        type: "string",
-      },
-    },
-    required: ["location", "title", "description", "date"],
-  };
-  
+export default function validateEvent(req: Request, res: Response, next: NextFunction) {
+    try {
+        const valid = ajv.validate(eventSchema, req.body);
+        if (!valid) {
+            return res.status(400).send(ajv.errors);
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
+}

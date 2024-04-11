@@ -6,6 +6,7 @@ type IProps = {
     events: IEvent[]
     onPaginationChange: (page: number, pageSize: number) => void,
     totalEvents: number,
+    perPage:number
 }
 
 
@@ -85,7 +86,7 @@ export default function EventsTable(props: IProps) {
       />
       <Pagination
         total={props.totalEvents}
-        pageSize={10}
+        pageSize={props.perPage}
         onChange={onPageChange}
       />
     </div>

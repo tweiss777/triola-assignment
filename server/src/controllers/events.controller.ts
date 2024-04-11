@@ -35,14 +35,8 @@ export async function getEvent(
     next: NextFunction,
 ) {
     try {
-        const page_number = req.query.page_number as string;
-        const per_page = req.query.per_page as string;
         const id: string = req.params.id;
-        const pageNumber = parseInt(page_number) >= 1 ? parseInt(page_number) : 1;
-        const perPage =
-            per_page && parseInt(per_page) >= 1 ? parseInt(per_page) : 10;
-        const offset = calculatePaginationOffset(pageNumber, perPage).toString();
-        const query: string = `SELECT * FROM events WHERE id='${id}' LIMIT ${perPage} OFFSET ${offset}`;
+        const query: string = `SELECT * FROM events WHERE id='${id}'`;
         const events = await execute<IEvent[]>(query);
         const response: ResponseObject<IEvent[]> = { data: events };
 
