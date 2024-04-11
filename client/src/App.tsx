@@ -13,13 +13,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   const items: MenuItem[] = [
-    getItem("Dashboard", "1", <PieChartOutlined />),
-    getItem("Events", "2", <DesktopOutlined />),
+    getItem("dashboard", "/dashboard", <PieChartOutlined />),
+    getItem("events", "/events", <DesktopOutlined />),
   ];
 
 
-  const { setLoading } = useLoadingContext();
-
+    const { setLoading } = useLoadingContext();
     const [events, setEvents] = useState<IEvent[]>([]);
     const [pageNumber, setPageNumber] = useState(1);
     const [perPage, setPerPage] = useState(10);
@@ -63,17 +62,26 @@ function App() {
     }
 
   return (
-        
+    <BrowserRouter>  
     <div className="app-container">
       <Row gutter={16}>
         <Col span={4}>
           <VerticalMenu menuItems={items} />
         </Col>
         <Col span={20}>
-          <EventsTable totalEvents={totalEvents.current} onPaginationChange={handlePaginationChange} events={events} />
+          <Routes>
+            <Route path="/dashboard" element={
+                <EventsTable totalEvents={totalEvents.current} onPaginationChange={handlePaginationChange} events={events} />
+            } />
+            <Route path="/events" element={
+                <EventsTable totalEvents={totalEvents.current} onPaginationChange={handlePaginationChange} events={events} />
+            } />
+          </Routes>
         </Col>
       </Row>
     </div>
+    </BrowserRouter>
+
   );
 }
 
