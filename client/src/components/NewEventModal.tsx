@@ -1,12 +1,12 @@
 import { Button, DatePicker, Input } from "antd";
-import { IEvent, INewEvent } from "../types/IEvent";
+import { INewEvent } from "../types/IEvent";
 import "../scss/new-event-styles.scss";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { useState } from "react";
 
 type IProps = {
-    handleSubmit: (values: IEvent) => void;
+    handleSubmit: (values: INewEvent) => void;
     handleCancel: () => void;
 };
 
@@ -21,7 +21,6 @@ export default function NewEventModal(props: IProps) {
     });
 
     function onSubmit() {
-        console.log(newEvent);
         props.handleSubmit(newEvent);
     }
     function onCancel() {
@@ -61,7 +60,7 @@ export default function NewEventModal(props: IProps) {
                     <h2>Date</h2>
                     <DatePicker
                         onChange={(_date, dateString) =>
-                            setNewEvent({ ...newEvent, date: dateString })
+                            setNewEvent({ ...newEvent, date: dateString as string })
                         }
                         placeholder="date"
                         name="date"

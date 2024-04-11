@@ -1,4 +1,8 @@
-import { getEventCount, getEvents, createNewEvent } from "./services/events.services";
+import {
+    getEventCount,
+    getEvents,
+    createNewEvent,
+} from "./services/events.services";
 import { useEffect, useRef, useState } from "react";
 import { MenuItem } from "./types/MenuItem";
 import { PieChartOutlined, DesktopOutlined } from "@ant-design/icons";
@@ -24,6 +28,8 @@ function App() {
     const totalEvents = useRef<number>(0);
     const [showNewEventModal, setShowNewEventModal] = useState<boolean>(false);
     const [addSuccess, setAddSuccess] = useState<boolean>(false);
+
+    const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
     function getItem(
         label: React.ReactNode,
@@ -61,27 +67,48 @@ function App() {
         setPerPage(pageSize);
         await fetchData();
     }
-    function toggleNewEventForm(){
-        setShowNewEventModal((flag: boolean) => !flag)
-
+    function toggleNewEventForm() {
+        setShowNewEventModal((flag: boolean) => !flag);
     }
-    async function onCreateNewEvent(event: INewEvent){
+    async function onCreateNewEvent(event: INewEvent) {
         try {
+            setValidationErrors([]);
             setAddSuccess(false);
             await createNewEvent(event);
             setAddSuccess(true);
-        } catch (error) {
-            throw error 
-        }
+        } catch (error: any) {
+            if (error.response.status === 400) {
 
+                setValidationErrors(error.response.data);
+            }
+        }
     }
 
     return (
         <BrowserRouter>
             <div className="app-container">
-                { addSuccess && <Alert  message="Event Added!" type="success" showIcon/> }
+                {validationErrors.length > 0 && (
+                    <Alert
+                        message="Validation Errors!"
+                        description={
+                            <ul>
+                                {validationErrors.map((error) => (
+                                    <li>{error}</li>
+                                ))}
+                            </ul>
+                        }
+                        type="error"
+                        showIcon
+                    />
+                )}
+                {addSuccess && <Alert message="Event Added!" type="success" showIcon />}
                 <Button onClick={toggleNewEventForm}>Add New Event</Button>
-               {showNewEventModal && <NewEventModal handleCancel={toggleNewEventForm} handleSubmit={onCreateNewEvent} /> } 
+                {showNewEventModal && (
+                    <NewEventModal
+                        handleCancel={toggleNewEventForm}
+                        handleSubmit={onCreateNewEvent}
+                    />
+                )}
                 <Row gutter={16}>
                     <Col span={4}>
                         <VerticalMenu menuItems={items} />
@@ -91,7 +118,6 @@ function App() {
                             <Route
                                 path="/dashboard"
                                 element={
-                                    
                                     <EventsTable
                                         perPage={perPage}
                                         totalEvents={totalEvents.current}
@@ -112,9 +138,6 @@ function App() {
                                 }
                             />
                         </Routes>
-                    </Col>
-                    <Col>
-
                     </Col>
                 </Row>
             </div>

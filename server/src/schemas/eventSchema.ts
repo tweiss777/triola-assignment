@@ -9,15 +9,19 @@ const eventSchema: JSONSchemaType<IEvent> = {
       },
       title: {
         type: "string",
+        notEmpty: true,
       },
       description: {
         type: "string",
+        notEmpty: true,
       },
       date: {
         type: "string",
+        notEmpty: true,
       },
       location: {
         type: "string",
+        notEmpty: true,
       },
     },
     required: ["location", "title", "description", "date"],
