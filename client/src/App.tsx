@@ -1,35 +1,26 @@
-import {
-    getEventCount,
-    getEvents,
-    createNewEvent,
-} from "./services/events.services";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { MenuItem } from "./types/MenuItem";
 import { PieChartOutlined, DesktopOutlined } from "@ant-design/icons";
 import VerticalMenu from "./components/VerticalMenu";
 import "./scss/styles.scss";
-import { useLoadingContext } from "./contexts/LoadingContext";
 import EventsTable from "./components/Table";
 import { Row, Col, Button, Alert } from "antd";
-import { IEvent, INewEvent } from "./types/IEvent";
+import { INewEvent } from "./types/IEvent";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NewEventModal from "./components/NewEventModal";
-
+import { useEvents } from "./hooks/useEvents";
 function App() {
     const items: MenuItem[] = [
         getItem("dashboard", "/dashboard", <PieChartOutlined />),
         getItem("events", "/events", <DesktopOutlined />),
     ];
 
-    const { setLoading } = useLoadingContext();
-    const [events, setEvents] = useState<IEvent[]>([]);
-    const [pageNumber, setPageNumber] = useState(1);
-    const [perPage, setPerPage] = useState(10);
-    const totalEvents = useRef<number>(0);
     const [showNewEventModal, setShowNewEventModal] = useState<boolean>(false);
     const [addSuccess, setAddSuccess] = useState<boolean>(false);
-
     const [validationErrors, setValidationErrors] = useState<string[]>([]);
+
+    const { events, totalEvents, perPage, handlePaginationChange, createEvent } =
+        useEvents();
 
     function getItem(
         label: React.ReactNode,
@@ -47,26 +38,6 @@ function App() {
         } as MenuItem;
     }
 
-    useEffect(() => {
-        async function getData() {
-            await fetchData();
-        }
-        getData();
-    }, []);
-    async function fetchData() {
-        setLoading(true);
-        const retrievedEvents = await getEvents(pageNumber, perPage);
-        const totalEntries = await getEventCount();
-        totalEvents.current = totalEntries;
-        setEvents(retrievedEvents);
-        setLoading(false);
-    }
-
-    async function handlePaginationChange(page: number, pageSize: number) {
-        setPageNumber(page);
-        setPerPage(pageSize);
-        await fetchData();
-    }
     function toggleNewEventForm() {
         setShowNewEventModal((flag: boolean) => !flag);
     }
@@ -74,11 +45,10 @@ function App() {
         try {
             setValidationErrors([]);
             setAddSuccess(false);
-            await createNewEvent(event);
+            await createEvent(event);
             setAddSuccess(true);
         } catch (error: any) {
             if (error.response.status === 400) {
-
                 setValidationErrors(error.response.data);
             }
         }
@@ -120,7 +90,7 @@ function App() {
                                 element={
                                     <EventsTable
                                         perPage={perPage}
-                                        totalEvents={totalEvents.current}
+                                        totalEvents={totalEvents}
                                         onPaginationChange={handlePaginationChange}
                                         events={events}
                                     />
@@ -131,7 +101,7 @@ function App() {
                                 element={
                                     <EventsTable
                                         perPage={perPage}
-                                        totalEvents={totalEvents.current}
+                                        totalEvents={totalEvents}
                                         onPaginationChange={handlePaginationChange}
                                         events={events}
                                     />

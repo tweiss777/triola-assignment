@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext,  useState } from "react";
 
 interface ILoadingContext {
     loading: boolean;
@@ -10,14 +10,13 @@ interface IProps {
 }
 
 
-const LoadingContext = createContext<ILoadingContext>({
+export const LoadingContext = createContext<ILoadingContext>({
     loading: false,
     setLoading: () => {},
 });
 
 
 
-export const useLoadingContext = () => useContext(LoadingContext);
 
 export default function LoadingProvider(props: IProps){
     const [loading, setLoading] = useState<boolean>(false);

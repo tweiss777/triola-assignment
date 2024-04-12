@@ -1,6 +1,6 @@
 import { IEvent } from "../types/IEvent";
 import { Table, Pagination, TableProps } from "antd";
-import { useLoadingContext } from "../contexts/LoadingContext";
+import { useLoadingContext } from "../hooks/useLoadingContext";
 
 type IProps = {
     events: IEvent[]
@@ -11,7 +11,8 @@ type IProps = {
 
 
 export default function EventsTable(props: IProps) {
-    const { loading} = useLoadingContext()
+
+    const { loading } = useLoadingContext()
   function onColClick(record: IEvent) {}
 
      async function onPageChange(page: number, pageSize: number) {
